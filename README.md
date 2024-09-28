@@ -1,6 +1,6 @@
-# Sports Facility Booking Platform
+# recipe-sharing-community-server
 
-A comprehensive Sports Facility Booking Platform built with Node.js, Express, Mongoose, and TypeScript. This API allows users to check availability, create bookings, facilities, user, and view all of these and update and delete also.
+A comprehensive recipe-sharing-community-server built with Node.js, Express, Mongoose, and TypeScript. This API allows users to create availability, create recipe, user, and view all of these and update and delete also.
 
 ## Live URL
 
@@ -8,9 +8,7 @@ A comprehensive Sports Facility Booking Platform built with Node.js, Express, Mo
 
 ## Features
 
-- **Check Availability**: Check the availability of time slots for a specific date.
-- **Create Booking, Facility and User**: Users can create bookings for available time slots.
-- **View All Bookings, Create Facility and Many More**: Admins can view all bookings, and get others facilities.
+- **Create User and Recipe**: Users can create recipe.
 - **Authentication**: Secure routes with JWT-based authentication.
 
 ## Technologies Used
