@@ -1,6 +1,6 @@
-import { Schema, model } from 'mongoose';
+import mongoose, { Schema, model } from 'mongoose';
 import { TUser, UserModel } from './user.interface';
-import { role } from './user.constant';
+import { role, status } from './user.constant';
 import bcrypt from 'bcrypt';
 import config from '../../config';
 
@@ -21,6 +21,16 @@ const userSchema = new Schema<TUser, UserModel>({
   },
   image: { type: String, required: [true, 'Image is required!'] },
   bio: { type: String, default: '' },
+  status: {
+    type: String,
+    enum: {
+      values: status,
+      message: '{VALUE} is not valid!',
+    },
+    default: 'unblock',
+  },
+  follower: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 });
 
 userSchema.statics.isUserExistsByCustomId = async function (email: string) {

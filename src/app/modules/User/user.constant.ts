@@ -1,3 +1,4 @@
-import { TUserRole } from './user.interface';
+import { TUserRole, TUserStatus } from './user.interface';
 
 export const role: TUserRole[] = ['admin', 'user'];
+export const status: TUserStatus[] = ['block', 'unblock'];
