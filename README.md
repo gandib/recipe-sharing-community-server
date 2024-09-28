@@ -1,4 +1,4 @@
-# recipe-sharing-community-server
+# Recipe Sharing Community Server
 
 A comprehensive recipe-sharing-community-server built with Node.js, Express, Mongoose, and TypeScript. This API allows users to create availability, create recipe, user, and view all of these and update and delete also.
 
