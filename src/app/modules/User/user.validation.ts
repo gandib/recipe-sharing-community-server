@@ -21,6 +21,10 @@ const updateUserValidationSchema = z.object({
     role: z.enum([...role] as [string, ...string[]]).optional(),
     image: z.string().optional(),
     bio: z.string().optional(),
+    status: z.string().optional(),
+    membership: z.string().optional(),
+    follower: z.string().optional(),
+    following: z.string().optional(),
   }),
 });
 
@@ -31,8 +35,29 @@ const loginValidationSchema = z.object({
   }),
 });
 
+const forgetPasswordValidationSchema = z.object({
+  body: z.object({
+    _id: z.string({
+      required_error: 'User _id is required!',
+    }),
+  }),
+});
+
+const resetPasswordValidationSchema = z.object({
+  body: z.object({
+    _id: z.string({
+      required_error: 'User id is required!',
+    }),
+    password: z.string({
+      required_error: 'User password is required!',
+    }),
+  }),
+});
+
 export const userValidations = {
   createUserValidationSchema,
   updateUserValidationSchema,
   loginValidationSchema,
+  forgetPasswordValidationSchema,
+  resetPasswordValidationSchema,
 };

@@ -1,6 +1,6 @@
 import mongoose, { Schema, model } from 'mongoose';
 import { TUser, UserModel } from './user.interface';
-import { role, status } from './user.constant';
+import { membership, role, status } from './user.constant';
 import bcrypt from 'bcrypt';
 import config from '../../config';
 
@@ -27,10 +27,18 @@ const userSchema = new Schema<TUser, UserModel>({
       values: status,
       message: '{VALUE} is not valid!',
     },
-    default: 'unblock',
+    default: 'unblocked',
   },
   follower: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  membership: {
+    type: String,
+    enum: {
+      values: membership,
+      message: '{VALUE} is not valid!',
+    },
+    default: 'basic',
+  },
 });
 
 userSchema.statics.isUserExistsByCustomId = async function (email: string) {
