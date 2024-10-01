@@ -37,15 +37,15 @@ router.patch(
 );
 
 router.patch(
-  '/update-follower',
-  validateRequest(userValidations.updateFollowerValidationSchema),
-  userControllers.updateFollower,
-);
-
-router.patch(
   '/update-following',
   validateRequest(userValidations.updateFollowingValidationSchema),
   userControllers.updateFollowing,
+);
+
+router.patch(
+  '/update-unfollowing',
+  validateRequest(userValidations.updateFollowingValidationSchema),
+  userControllers.updateUnFollowing,
 );
 
 router.patch(

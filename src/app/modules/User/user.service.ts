@@ -9,6 +9,7 @@ import { createToken, verifyToken } from './user.utils';
 import { sendEmail } from '../../utils/sendEmail';
 import bcrypt from 'bcrypt';
 import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
+import mongoose from 'mongoose';
 
 const createUser = async (file: any, payload: TUser) => {
   const isUserExists = await User.findOne({ email: payload.email });
@@ -80,7 +81,14 @@ const updateUser = async (id: string, payload: TUser) => {
     throw new AppError(httpStatus.NOT_FOUND, 'User Not found!');
   }
 
-  const result = User.findByIdAndUpdate(
+  if (payload.password) {
+    payload.password = await bcrypt.hash(
+      payload.password,
+      Number(config.bcrypt_salt_rounds),
+    );
+  }
+
+  const result = await User.findByIdAndUpdate(
     id,
     {
       name: payload.name,
@@ -97,43 +105,75 @@ const updateUser = async (id: string, payload: TUser) => {
   return result;
 };
 
-const updateFollower = async (id: string, payload: TUser) => {
-  const user = await User.findById(id).select('-password');
-
-  if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, 'User Not found!');
-  }
-
-  const result = User.findByIdAndUpdate(
-    id,
-    { $addToSet: { follower: { $each: [payload.follower] } } },
-    { new: true },
-  );
-
-  return result;
-};
-
 const updateFollowing = async (id: string, payload: TUser) => {
   const user = await User.findById(id).select('-password');
+  const follower = await User.findById(payload.following).select('-password');
 
-  if (!user) {
+  if (!user || !follower) {
     throw new AppError(httpStatus.NOT_FOUND, 'User Not found!');
   }
 
-  //for deleting
-  // const result = User.findByIdAndUpdate(
-  //   id,
-  //   { $pull: { following: payload.following } },
-  //   { new: true },
-  // );
+  const session = await mongoose.startSession();
 
-  const result = User.findByIdAndUpdate(
-    id,
-    { $addToSet: { following: { $each: [payload.following] } } },
-    { new: true },
-  );
+  try {
+    session.startTransaction();
 
-  return result;
+    await User.findByIdAndUpdate(
+      payload.following,
+      { $addToSet: { following: { $each: [id] } } },
+      { new: true, session },
+    );
+
+    const result = await User.findByIdAndUpdate(
+      id,
+      { $addToSet: { follower: { $each: [payload.following] } } },
+      { new: true, session },
+    );
+
+    await session.commitTransaction();
+    await session.endSession();
+
+    return result;
+  } catch (error: any) {
+    session.abortTransaction();
+    session.endSession();
+    throw new Error(error);
+  }
+};
+
+const updateUnFollowing = async (id: string, payload: TUser) => {
+  const user = await User.findById(id).select('-password');
+  const follower = await User.findById(payload.following).select('-password');
+
+  if (!user || !follower) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User Not found!');
+  }
+
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+
+    const result = await User.findByIdAndUpdate(
+      id,
+      { $pull: { following: payload.following } },
+      { new: true, session },
+    );
+
+    await User.findByIdAndUpdate(
+      payload.following,
+      { $pull: { follower: id } },
+      { new: true, session },
+    );
+
+    await session.commitTransaction();
+    await session.endSession();
+
+    return result;
+  } catch (error: any) {
+    session.abortTransaction();
+    session.endSession();
+    throw new Error(error);
+  }
 };
 
 const deleteUser = async (id: string) => {
@@ -143,7 +183,7 @@ const deleteUser = async (id: string) => {
     throw new AppError(httpStatus.NOT_FOUND, 'User Not found!');
   }
 
-  const result = User.findByIdAndDelete(id);
+  const result = await User.findByIdAndDelete(id);
 
   return result;
 };
@@ -155,7 +195,7 @@ const updateUserStatus = async (id: string, payload: TUser) => {
     throw new AppError(httpStatus.NOT_FOUND, 'User Not found!');
   }
 
-  const result = User.findByIdAndUpdate(
+  const result = await User.findByIdAndUpdate(
     id,
     { status: payload.status },
     { new: true },
@@ -245,7 +285,7 @@ export const userServices = {
   resetPassword,
   updateUser,
   updateUserStatus,
-  updateFollower,
   updateFollowing,
   deleteUser,
+  updateUnFollowing,
 };

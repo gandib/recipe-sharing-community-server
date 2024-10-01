@@ -50,9 +50,9 @@ const updateUser = catchAsync(async (req, res) => {
   });
 });
 
-const updateFollower = catchAsync(async (req, res) => {
+const updateFollowing = catchAsync(async (req, res) => {
   const { id } = req.query;
-  const result = await userServices.updateFollower(id as string, req.body);
+  const result = await userServices.updateFollowing(id as string, req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -62,9 +62,9 @@ const updateFollower = catchAsync(async (req, res) => {
   });
 });
 
-const updateFollowing = catchAsync(async (req, res) => {
+const updateUnFollowing = catchAsync(async (req, res) => {
   const { id } = req.query;
-  const result = await userServices.updateFollowing(id as string, req.body);
+  const result = await userServices.updateUnFollowing(id as string, req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -130,7 +130,7 @@ export const userControllers = {
   resetPassword,
   updateUser,
   updateUserStatus,
-  updateFollower,
   updateFollowing,
   deleteUser,
+  updateUnFollowing,
 };
