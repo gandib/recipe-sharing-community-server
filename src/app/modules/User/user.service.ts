@@ -80,7 +80,74 @@ const updateUser = async (id: string, payload: TUser) => {
     throw new AppError(httpStatus.NOT_FOUND, 'User Not found!');
   }
 
-  const result = User.findByIdAndUpdate(id, payload, { new: true });
+  const result = User.findByIdAndUpdate(
+    id,
+    {
+      name: payload.name,
+      password: payload.password,
+      image: payload.image,
+      bio: payload.bio,
+      membership: payload.membership,
+      transactionId: payload.transactionId,
+      subscriptionValidity: payload.subscriptionValidity,
+    },
+    { new: true },
+  );
+
+  return result;
+};
+
+const updateFollower = async (id: string, payload: TUser) => {
+  const user = await User.findById(id).select('-password');
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User Not found!');
+  }
+
+  const result = User.findByIdAndUpdate(
+    id,
+    { $addToSet: { follower: { $each: [payload.follower] } } },
+    { new: true },
+  );
+
+  return result;
+};
+
+const updateFollowing = async (id: string, payload: TUser) => {
+  const user = await User.findById(id).select('-password');
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User Not found!');
+  }
+
+  //for deleting
+  // const result = User.findByIdAndUpdate(
+  //   id,
+  //   { $pull: { following: payload.following } },
+  //   { new: true },
+  // );
+
+  const result = User.findByIdAndUpdate(
+    id,
+    { $addToSet: { following: { $each: [payload.following] } } },
+    { new: true },
+  );
+
+  return result;
+};
+
+const updateUserStatus = async (id: string, payload: TUser) => {
+  const user = await User.findById(id).select('-password');
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User Not found!');
+  }
+
+  const result = User.findByIdAndUpdate(
+    id,
+    { status: payload.status },
+    { new: true },
+  );
 
   return result;
 };
@@ -165,4 +232,7 @@ export const userServices = {
   forgetPassword,
   resetPassword,
   updateUser,
+  updateUserStatus,
+  updateFollower,
+  updateFollowing,
 };

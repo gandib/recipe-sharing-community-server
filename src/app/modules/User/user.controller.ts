@@ -50,6 +50,42 @@ const updateUser = catchAsync(async (req, res) => {
   });
 });
 
+const updateFollower = catchAsync(async (req, res) => {
+  const { id } = req.query;
+  const result = await userServices.updateFollower(id as string, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User updated successfully',
+    data: result,
+  });
+});
+
+const updateFollowing = catchAsync(async (req, res) => {
+  const { id } = req.query;
+  const result = await userServices.updateFollowing(id as string, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User updated successfully',
+    data: result,
+  });
+});
+
+const updateUserStatus = catchAsync(async (req, res) => {
+  const { id } = req.query;
+  const result = await userServices.updateUserStatus(id as string, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User updated successfully',
+    data: result,
+  });
+});
+
 const forgetPassword = catchAsync(async (req, res) => {
   const userId = req.body._id;
   const result = await userServices.forgetPassword(userId);
@@ -81,4 +117,7 @@ export const userControllers = {
   forgetPassword,
   resetPassword,
   updateUser,
+  updateUserStatus,
+  updateFollower,
+  updateFollowing,
 };

@@ -3,6 +3,7 @@ import validateRequest from '../../middlewares/validateRequest';
 import { userValidations } from './user.validation';
 import { userControllers } from './user.controller';
 import { upload } from '../../utils/sendEmail';
+import auth from '../../middlewares/auth';
 
 const router = express.Router();
 
@@ -32,6 +33,25 @@ router.post(
 router.patch(
   '/update-user',
   validateRequest(userValidations.updateUserValidationSchema),
+  userControllers.updateUser,
+);
+
+router.patch(
+  '/update-follower',
+  validateRequest(userValidations.updateFollowerValidationSchema),
+  userControllers.updateFollower,
+);
+
+router.patch(
+  '/update-following',
+  validateRequest(userValidations.updateFollowingValidationSchema),
+  userControllers.updateFollowing,
+);
+
+router.patch(
+  '/update-user-status',
+  auth('admin'),
+  validateRequest(userValidations.updateUserStatusValidationSchema),
   userControllers.updateUser,
 );
 
