@@ -29,6 +29,12 @@ router.post(
   userControllers.forgetPassword,
 );
 
+router.patch(
+  '/update-user',
+  validateRequest(userValidations.updateUserValidationSchema),
+  userControllers.updateUser,
+);
+
 router.post(
   '/reset-password',
   validateRequest(userValidations.resetPasswordValidationSchema),

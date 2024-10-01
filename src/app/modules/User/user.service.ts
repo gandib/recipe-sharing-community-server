@@ -73,6 +73,18 @@ const getUser = async (email: string) => {
   return result;
 };
 
+const updateUser = async (id: string, payload: TUser) => {
+  const user = await User.findById(id).select('-password');
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User Not found!');
+  }
+
+  const result = User.findByIdAndUpdate(id, payload, { new: true });
+
+  return result;
+};
+
 const forgetPassword = async (userId: string) => {
   //checking if the user is exists
   const user = await User.findById(userId);
@@ -152,4 +164,5 @@ export const userServices = {
   getUser,
   forgetPassword,
   resetPassword,
+  updateUser,
 };
