@@ -136,6 +136,18 @@ const updateFollowing = async (id: string, payload: TUser) => {
   return result;
 };
 
+const deleteUser = async (id: string) => {
+  const user = await User.findById(id).select('-password');
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User Not found!');
+  }
+
+  const result = User.findByIdAndDelete(id);
+
+  return result;
+};
+
 const updateUserStatus = async (id: string, payload: TUser) => {
   const user = await User.findById(id).select('-password');
 
@@ -235,4 +247,5 @@ export const userServices = {
   updateUserStatus,
   updateFollower,
   updateFollowing,
+  deleteUser,
 };

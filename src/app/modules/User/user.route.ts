@@ -55,6 +55,8 @@ router.patch(
   userControllers.updateUser,
 );
 
+router.delete('/delete-user', auth('admin'), userControllers.deleteUser);
+
 router.post(
   '/reset-password',
   validateRequest(userValidations.resetPasswordValidationSchema),
