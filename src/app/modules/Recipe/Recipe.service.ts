@@ -4,18 +4,26 @@ import AppError from '../../errors/appError';
 import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
 import mongoose from 'mongoose';
 import { Recipe } from './Recipe.model';
-import { TRecipe } from './Recipe.interface';
+import { TImageFiles, TRecipe } from './Recipe.interface';
 import { User } from '../User/user.model';
 
-const createRecipe = async (file: any, payload: TRecipe) => {
+const createRecipe = async (files: TImageFiles, payload: TRecipe) => {
+  const { file } = files;
   try {
     if (file) {
-      const imageName = `${payload?.title}${payload?.user}`;
-      const path = file?.path;
+      const paths: string[] = [];
+      const imageUrl: string[] = [];
+      file.map((image: any) => {
+        paths.push(image?.path);
+      });
 
       // send image to cloudinary
-      const { secure_url } = await sendImageToCloudinary(imageName, path);
-      payload.image = secure_url as string;
+      for (let index = 0; index < paths.length; index++) {
+        const element2 = paths[index];
+        const { secure_url } = await sendImageToCloudinary(element2);
+        imageUrl.push(secure_url as string);
+      }
+      payload.image = imageUrl as string[];
     }
   } catch (error) {
     console.log(error);

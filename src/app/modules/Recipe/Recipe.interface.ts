@@ -12,11 +12,12 @@ export type TComment = {
 
 export type TContentType = 'free' | 'premium';
 export type TRecipeStatus = 'published' | 'unpublished';
+export type TImageFiles = { [fieldname: string]: Express.Multer.File[] };
 
 export interface TRecipe {
   user: Types.ObjectId;
   title: string;
-  image: string;
+  image: string[];
   rating: TRating;
   comment: TComment;
   upvote: Types.ObjectId;

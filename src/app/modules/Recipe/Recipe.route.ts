@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.post(
   '/create-recipe',
-  upload.single('file'),
+  upload.fields([{ name: 'file' }]),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = JSON.parse(req.body.data);
     next();

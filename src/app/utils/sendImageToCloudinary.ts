@@ -11,7 +11,7 @@ cloudinary.config({
 });
 
 export const sendImageToCloudinary = async (
-  imageName: string,
+  // imageName: string,
   path: string,
 ): Promise<Record<string, unknown>> => {
   // console.log(imageName, path);
@@ -20,7 +20,7 @@ export const sendImageToCloudinary = async (
     cloudinary.uploader.upload(
       path,
       {
-        public_id: imageName,
+        public_id: String(Math.random()),
       },
       function (error, result) {
         if (error) {

@@ -27,7 +27,7 @@ const recipeSchema = new Schema<TRecipe>({
     ref: 'User',
   },
   title: { type: String, required: [true, 'Title is required!'] },
-  image: { type: String, required: [true, 'Image is required!'] },
+  image: { type: [String], required: [true, 'Image is required!'] },
   rating: [ratingSchema],
   comment: [copmmentSchema],
   upvote: [{ type: Schema.Types.ObjectId, ref: 'User' }],

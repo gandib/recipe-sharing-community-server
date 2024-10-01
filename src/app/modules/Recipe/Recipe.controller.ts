@@ -2,9 +2,13 @@ import httpStatus from 'http-status';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { recipeServices } from './Recipe.service';
+import { TImageFiles } from './Recipe.interface';
 
 const createRecipe = catchAsync(async (req, res) => {
-  const result = await recipeServices.createRecipe(req.file, req.body);
+  const result = await recipeServices.createRecipe(
+    req.files as TImageFiles,
+    req.body,
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
