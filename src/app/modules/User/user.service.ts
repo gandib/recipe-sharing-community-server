@@ -19,15 +19,19 @@ const createUser = async (file: any, payload: TUser) => {
 
   try {
     if (file) {
-      const imageName = `${payload?.email}${payload?.name}`;
+      // const imageName = `${payload?.email}${payload?.name}`;
       const path = file?.path;
 
       // send image to cloudinary
-      const { secure_url } = await sendImageToCloudinary(imageName, path);
+      const { secure_url } = await sendImageToCloudinary(path);
       payload.image = secure_url as string;
     }
   } catch (error) {
     console.log(error);
+  }
+
+  if (payload.image === ' ') {
+    payload.image = config.profile_photo!;
   }
 
   const user = await User.create(payload);
@@ -49,8 +53,18 @@ const loginUser = async (payload: TLoginUser) => {
   }
 
   const jwtPayload = {
+    _id: user?._id,
+    name: user?.name,
     email: user?.email,
     role: user?.role,
+    status: user?.status,
+    image: user?.image,
+    bio: user?.bio,
+    follower: user?.follower,
+    following: user?.following,
+    membership: user?.membership,
+    transactionId: user?.transactionId,
+    subscriptionValidity: user?.subscriptionValidity,
   };
 
   const token = jwt.sign(jwtPayload, config.jwt_access_secret as string, {
@@ -219,9 +233,18 @@ const forgetPassword = async (userId: string) => {
 
   // create token and send to the user
   const jwtPayload = {
+    _id: user?._id,
     name: user?.name,
-    role: user?.role,
     email: user?.email,
+    role: user?.role,
+    status: user?.status,
+    image: user?.image,
+    bio: user?.bio,
+    follower: user?.follower,
+    following: user?.following,
+    membership: user?.membership,
+    transactionId: user?.transactionId,
+    subscriptionValidity: user?.subscriptionValidity,
   };
 
   const resetToken = createToken(

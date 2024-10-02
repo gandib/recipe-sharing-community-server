@@ -19,8 +19,8 @@ const createRecipe = async (files: TImageFiles, payload: TRecipe) => {
 
       // send image to cloudinary
       for (let index = 0; index < paths.length; index++) {
-        const element2 = paths[index];
-        const { secure_url } = await sendImageToCloudinary(element2);
+        const path = paths[index];
+        const { secure_url } = await sendImageToCloudinary(path);
         imageUrl.push(secure_url as string);
       }
       payload.image = imageUrl as string[];

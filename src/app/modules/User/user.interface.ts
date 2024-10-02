@@ -5,6 +5,7 @@ export type TUserStatus = 'blocked' | 'unblocked';
 export type TUserMembership = 'basic' | 'premium';
 
 export interface TUser {
+  _id?: string;
   name: string;
   email: string;
   password: string;
