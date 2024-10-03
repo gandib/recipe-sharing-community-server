@@ -220,7 +220,7 @@ const updateUserStatus = async (id: string, payload: TUser) => {
 
 const forgetPassword = async (userId: string) => {
   //checking if the user is exists
-  const user = await User.findById(userId);
+  const user = await User.findOne({ email: userId });
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User is not found!');
   }
@@ -262,7 +262,7 @@ const resetPassword = async (
   token: string,
 ) => {
   //checking if the user is exists
-  const user = await User.isUserExistsByCustomId(payload.id);
+  const user = await User.findById(payload.id);
 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User is not found!');
@@ -277,9 +277,8 @@ const resetPassword = async (
   // check if the token is valid and id is same of user
   const decoded = verifyToken(token, config.jwt_access_secret as string);
 
-  const { userId, role } = decoded;
-
-  if (payload?.id !== userId) {
+  const { _id, role } = decoded;
+  if (payload?.id !== _id) {
     throw new AppError(httpStatus.FORBIDDEN, 'You are forbidden!');
   }
 
@@ -291,7 +290,7 @@ const resetPassword = async (
 
   await User.findOneAndUpdate(
     {
-      _id: userId,
+      _id,
       role: role,
     },
     {

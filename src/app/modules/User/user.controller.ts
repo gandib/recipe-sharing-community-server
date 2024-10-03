@@ -99,7 +99,7 @@ const updateUserStatus = catchAsync(async (req, res) => {
 });
 
 const forgetPassword = catchAsync(async (req, res) => {
-  const userId = req.body._id;
+  const userId = req.body.email;
   const result = await userServices.forgetPassword(userId);
 
   sendResponse(res, {

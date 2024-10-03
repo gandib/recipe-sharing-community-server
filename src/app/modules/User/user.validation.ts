@@ -52,18 +52,18 @@ const loginValidationSchema = z.object({
 
 const forgetPasswordValidationSchema = z.object({
   body: z.object({
-    _id: z.string({
-      required_error: 'User _id is required!',
+    email: z.string({
+      required_error: 'User email is required!',
     }),
   }),
 });
 
 const resetPasswordValidationSchema = z.object({
   body: z.object({
-    _id: z.string({
+    id: z.string({
       required_error: 'User id is required!',
     }),
-    password: z.string({
+    newPassword: z.string({
       required_error: 'User password is required!',
     }),
   }),
