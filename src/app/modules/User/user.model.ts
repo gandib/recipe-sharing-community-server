@@ -39,11 +39,18 @@ const userSchema = new Schema<TUser, UserModel>({
     },
     default: 'basic',
   },
+  transactionId: { type: String, default: '' },
+  subscriptionValidity: { type: String, default: '' },
 });
 
-userSchema.statics.isUserExistsByCustomId = async function (email: string) {
+userSchema.statics.isUserExistsByEmail = async function (email: string) {
   return await User.findOne({ email }).select('+password');
 };
+
+// userSchema.pre('find', function (next) {
+//   this.find({ status: { $ne: 'blocked' } });
+//   next();
+// });
 
 userSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(

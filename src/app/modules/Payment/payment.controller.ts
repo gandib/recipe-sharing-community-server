@@ -15,10 +15,11 @@ const initiatePayment = catchAsync(async (req, res) => {
 });
 
 const paymentConfirmation = catchAsync(async (req, res) => {
-  const { transactionId } = req.query;
+  const { transactionId, validity } = req.query;
 
   const result = await paymentServices.paymentConfirmation(
     transactionId as string,
+    validity as string,
   );
 
   res.send(result);

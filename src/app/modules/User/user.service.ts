@@ -79,6 +79,15 @@ const loginUser = async (payload: TLoginUser) => {
   };
 };
 
+const getAllUser = async () => {
+  const result = await User.find().select('-password');
+
+  if (!result.length) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Users Not found!');
+  }
+  return result;
+};
+
 const getUser = async (email: string) => {
   const result = await User.findOne({ email: email }).select('-password');
 
@@ -110,8 +119,6 @@ const updateUser = async (id: string, payload: TUser) => {
       image: payload.image,
       bio: payload.bio,
       membership: payload.membership,
-      transactionId: payload.transactionId,
-      subscriptionValidity: payload.subscriptionValidity,
     },
     { new: true },
   );
@@ -310,4 +317,5 @@ export const userServices = {
   updateFollowing,
   deleteUser,
   updateUnFollowing,
+  getAllUser,
 };
