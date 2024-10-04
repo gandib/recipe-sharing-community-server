@@ -41,7 +41,7 @@ const createUser = async (file: any, payload: TUser) => {
 };
 
 const loginUser = async (payload: TLoginUser) => {
-  const user = await User.isUserExistsByCustomId(payload?.email);
+  const user = await User.isUserExistsByEmail(payload?.email);
 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'No Data Found');
@@ -89,7 +89,9 @@ const getAllUser = async () => {
 };
 
 const getUser = async (email: string) => {
-  const result = await User.findOne({ email: email }).select('-password');
+  const result = await User.findOne({ email: email })
+    .select('-password')
+    .populate('follower following');
 
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, 'User Not found!');

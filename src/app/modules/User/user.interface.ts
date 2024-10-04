@@ -26,7 +26,7 @@ export interface TLoginUser {
 }
 
 export interface UserModel extends Model<TUser> {
-  isUserExistsByCustomId(email: string): Promise<TUser>;
+  isUserExistsByEmail(email: string): Promise<TUser>;
   isPasswordMatched(
     plainTextPassword: string,
     hashedPassword: string,
