@@ -52,7 +52,7 @@ router.patch(
   '/update-user-status',
   auth('admin'),
   validateRequest(userValidations.updateUserStatusValidationSchema),
-  userControllers.updateUser,
+  userControllers.updateUserStatus,
 );
 
 router.delete('/delete-user', auth('admin'), userControllers.deleteUser);
@@ -63,8 +63,8 @@ router.post(
   userControllers.resetPassword,
 );
 
+router.get('/all-user', userControllers.getAllUser);
+router.get('/all-admin', userControllers.getAllAdmin);
 router.get('/:email', userControllers.getUser);
-
-router.get('/', userControllers.getAllUser);
 
 export const userRoutes = router;

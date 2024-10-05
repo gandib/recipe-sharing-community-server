@@ -80,10 +80,21 @@ const loginUser = async (payload: TLoginUser) => {
 };
 
 const getAllUser = async () => {
-  const result = await User.find().select('-password');
+  const result = await User.find({ role: { $ne: 'admin' } }).select(
+    '-password',
+  );
 
   if (!result.length) {
     throw new AppError(httpStatus.NOT_FOUND, 'Users Not found!');
+  }
+  return result;
+};
+
+const getAllAdmin = async () => {
+  const result = await User.find({ role: { $ne: 'user' } }).select('-password');
+
+  if (!result.length) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Admin Not found!');
   }
   return result;
 };
@@ -201,7 +212,6 @@ const updateUnFollowing = async (id: string, payload: TUser) => {
 
 const deleteUser = async (id: string) => {
   const user = await User.findById(id).select('-password');
-
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User Not found!');
   }
@@ -211,7 +221,10 @@ const deleteUser = async (id: string) => {
   return result;
 };
 
-const updateUserStatus = async (id: string, payload: TUser) => {
+const updateUserStatus = async (
+  id: string,
+  payload: { status: string; id: string },
+) => {
   const user = await User.findById(id).select('-password');
 
   if (!user) {
@@ -219,7 +232,7 @@ const updateUserStatus = async (id: string, payload: TUser) => {
   }
 
   const result = await User.findByIdAndUpdate(
-    id,
+    payload.id,
     { status: payload.status },
     { new: true },
   );
@@ -320,4 +333,5 @@ export const userServices = {
   deleteUser,
   updateUnFollowing,
   getAllUser,
+  getAllAdmin,
 };

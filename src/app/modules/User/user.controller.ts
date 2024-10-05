@@ -37,6 +37,17 @@ const getAllUser = catchAsync(async (req, res) => {
   });
 });
 
+const getAllAdmin = catchAsync(async (req, res) => {
+  const result = await userServices.getAllAdmin();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Admins retrieved successfully',
+    data: result,
+  });
+});
+
 const getUser = catchAsync(async (req, res) => {
   const { email } = req.params;
   const result = await userServices.getUser(email as string);
@@ -87,6 +98,7 @@ const updateUnFollowing = catchAsync(async (req, res) => {
 
 const deleteUser = catchAsync(async (req, res) => {
   const { id } = req.query;
+
   const result = await userServices.deleteUser(id as string);
 
   sendResponse(res, {
@@ -145,4 +157,5 @@ export const userControllers = {
   deleteUser,
   updateUnFollowing,
   getAllUser,
+  getAllAdmin,
 };
