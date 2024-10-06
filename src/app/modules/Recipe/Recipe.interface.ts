@@ -17,6 +17,7 @@ export type TImageFiles = { [fieldname: string]: Express.Multer.File[] };
 export interface TRecipe {
   user: Types.ObjectId;
   title: string;
+  instructions: string;
   image: string[];
   rating: TRating;
   comment: TComment;

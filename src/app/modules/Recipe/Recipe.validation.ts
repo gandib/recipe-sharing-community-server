@@ -15,6 +15,7 @@ const createRecipeValidationSchema = z.object({
   body: z.object({
     user: z.string({ required_error: 'User Id is required!' }),
     title: z.string({ required_error: 'Title is required!' }),
+    instructions: z.string({ required_error: 'Instructions is required!' }),
     image: z.string({ required_error: 'Image is required!' }),
     tags: z.string({ required_error: 'Tag is required!' }),
     contentType: z.enum([...contentType] as [string, ...string[]], {
@@ -26,6 +27,7 @@ const createRecipeValidationSchema = z.object({
 const updateRecipeValidationSchema = z.object({
   body: z.object({
     title: z.string().optional(),
+    instructions: z.string().optional(),
     image: z.string().optional(),
     tags: z.string().optional(),
     contentType: z.enum([...contentType] as [string, ...string[]]).optional(),

@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import { Recipe } from './Recipe.model';
 import { TImageFiles, TRecipe } from './Recipe.interface';
 import { User } from '../User/user.model';
+import config from '../../config';
 
 const createRecipe = async (files: TImageFiles, payload: TRecipe) => {
   const { file } = files;
@@ -27,6 +28,10 @@ const createRecipe = async (files: TImageFiles, payload: TRecipe) => {
     }
   } catch (error) {
     console.log(error);
+  }
+  console.log(payload.image[0] === ' ');
+  if (payload.image[0] === ' ') {
+    payload.image = [config.recipe_photo!];
   }
 
   const result = await Recipe.create(payload);
@@ -65,6 +70,7 @@ const updateRecipe = async (id: string, payload: TRecipe) => {
     id,
     {
       title: payload.title,
+      instructions: payload.instructions,
       image: payload.image,
       tags: payload.tags,
       contentType: payload.contentType,
