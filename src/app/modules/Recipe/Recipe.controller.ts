@@ -19,7 +19,19 @@ const createRecipe = catchAsync(async (req, res) => {
 });
 
 const getAllRecipe = catchAsync(async (req, res) => {
-  const result = await recipeServices.getAllRecipe();
+  const result = await recipeServices.getAllRecipe(req.query);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Recipe retrieved successfully',
+    data: result,
+  });
+});
+
+const getAllMyRecipe = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await recipeServices.getAllMyRecipe(id as string, req.query);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -30,8 +42,8 @@ const getAllRecipe = catchAsync(async (req, res) => {
 });
 
 const getSingleRecipe = catchAsync(async (req, res) => {
-  const { id } = req.params;
-  const result = await recipeServices.getSingleRecipe(id);
+  const { email } = req.params;
+  const result = await recipeServices.getSingleRecipe(email);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -152,4 +164,5 @@ export const recipeControllers = {
   updateUpvote,
   updateDownvote,
   updateRecipeStatus,
+  getAllMyRecipe,
 };

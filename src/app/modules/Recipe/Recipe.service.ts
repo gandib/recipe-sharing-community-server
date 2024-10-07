@@ -7,6 +7,8 @@ import { Recipe } from './Recipe.model';
 import { TImageFiles, TRecipe } from './Recipe.interface';
 import { User } from '../User/user.model';
 import config from '../../config';
+import QueryBuilder from '../../builder/QueryBuilder';
+import { recipeSearchableFields } from './Recipe.constant';
 
 const createRecipe = async (files: TImageFiles, payload: TRecipe) => {
   const { file } = files;
@@ -29,7 +31,7 @@ const createRecipe = async (files: TImageFiles, payload: TRecipe) => {
   } catch (error) {
     console.log(error);
   }
-  console.log(payload.image[0] === ' ');
+
   if (payload.image[0] === ' ') {
     payload.image = [config.recipe_photo!];
   }
@@ -39,14 +41,44 @@ const createRecipe = async (files: TImageFiles, payload: TRecipe) => {
   return result;
 };
 
-const getAllRecipe = async () => {
-  const result = await Recipe.find();
+const getAllRecipe = async (query: Record<string, unknown>) => {
+  const recipeQuery = new QueryBuilder(
+    Recipe.find({ status: { $ne: 'unpublished' } }),
+    query,
+  )
+    .search(recipeSearchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
 
-  if (!result.length) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Recipe Not found!');
-  }
+  const result = await recipeQuery.modelQuery;
+  const meta = await recipeQuery.countTotal();
 
-  return result;
+  return {
+    meta,
+    result,
+  };
+};
+
+const getAllMyRecipe = async (id: string, query: Record<string, unknown>) => {
+  const recipeQuery = new QueryBuilder(
+    Recipe.find({ status: { $ne: 'unpublished' }, user: id }),
+    query,
+  )
+    .search(recipeSearchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await recipeQuery.modelQuery;
+  const meta = await recipeQuery.countTotal();
+
+  return {
+    meta,
+    result,
+  };
 };
 
 const getSingleRecipe = async (id: string) => {
@@ -202,4 +234,5 @@ export const recipeServices = {
   updateUpvote,
   updateDownvote,
   updateRecipeStatus,
+  getAllMyRecipe,
 };

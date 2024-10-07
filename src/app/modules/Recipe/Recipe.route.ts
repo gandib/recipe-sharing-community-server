@@ -20,7 +20,9 @@ router.post(
 
 router.get('/', recipeControllers.getAllRecipe);
 
-router.get('/:id', recipeControllers.getSingleRecipe);
+router.get('/my-recipe/:id', recipeControllers.getAllMyRecipe);
+
+router.get('/:email', recipeControllers.getSingleRecipe);
 
 router.patch(
   '/:id',
