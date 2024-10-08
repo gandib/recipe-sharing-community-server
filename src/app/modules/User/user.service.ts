@@ -110,6 +110,17 @@ const getUser = async (email: string) => {
   return result;
 };
 
+const getUserById = async (id: string) => {
+  const result = await User.findById(id)
+    .select('-password')
+    .populate('follower following');
+
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User Not found!');
+  }
+  return result;
+};
+
 const updateUser = async (id: string, payload: TUser) => {
   const user = await User.findById(id).select('-password');
 
@@ -141,7 +152,7 @@ const updateUser = async (id: string, payload: TUser) => {
 
 const updateFollowing = async (id: string, payload: TUser) => {
   const user = await User.findById(id).select('-password');
-  const follower = await User.findById(payload.following).select('-password');
+  const follower = await User.findById(payload.follower).select('-password');
 
   if (!user || !follower) {
     throw new AppError(httpStatus.NOT_FOUND, 'User Not found!');
@@ -153,14 +164,14 @@ const updateFollowing = async (id: string, payload: TUser) => {
     session.startTransaction();
 
     await User.findByIdAndUpdate(
-      payload.following,
+      payload.follower,
       { $addToSet: { following: { $each: [id] } } },
       { new: true, session },
     );
 
     const result = await User.findByIdAndUpdate(
       id,
-      { $addToSet: { follower: { $each: [payload.following] } } },
+      { $addToSet: { follower: { $each: [payload.follower] } } },
       { new: true, session },
     );
 
@@ -334,4 +345,5 @@ export const userServices = {
   updateUnFollowing,
   getAllUser,
   getAllAdmin,
+  getUserById,
 };

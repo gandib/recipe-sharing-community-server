@@ -22,6 +22,8 @@ router.get('/', recipeControllers.getAllRecipe);
 
 router.get('/my-recipe/:id', recipeControllers.getAllMyRecipe);
 
+router.get('/my-tags/:id', recipeControllers.getMyRecipeTags);
+
 router.get('/:email', recipeControllers.getSingleRecipe);
 
 router.patch(
@@ -40,20 +42,20 @@ router.patch(
 
 router.patch(
   '/comment/:id',
-  validateRequest(recipeValidations.updateRecipeRatingValidationSchema),
+  validateRequest(recipeValidations.updateRecipeCommentValidationSchema),
   recipeControllers.updateComment,
 );
 
 router.delete('/comment/:id', recipeControllers.deleteComment);
 
 router.patch(
-  '/upvote',
+  '/upvote/:id',
   validateRequest(recipeValidations.updateRecipeUpvoteValidationSchema),
   recipeControllers.updateUpvote,
 );
 
 router.patch(
-  '/downvote',
+  '/downvote/:id',
   validateRequest(recipeValidations.updateRecipeDownvoteValidationSchema),
   recipeControllers.updateDownvote,
 );
@@ -62,7 +64,7 @@ router.patch(
   '/status',
   auth('admin'),
   validateRequest(recipeValidations.updateRecipeStatusValidationSchema),
-  recipeControllers.updateDownvote,
+  recipeControllers.updateRecipeStatus,
 );
 
 export const recipeRoutes = router;

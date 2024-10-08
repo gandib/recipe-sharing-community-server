@@ -35,26 +35,22 @@ const updateRecipeValidationSchema = z.object({
 });
 
 const updateRecipeRatingValidationSchema = z.object({
-  body: z.object({
-    rating: updateRecipeRatingSchema,
-  }),
+  body: updateRecipeRatingSchema,
 });
 
 const updateRecipeCommentValidationSchema = z.object({
-  body: z.object({
-    comment: createRecipeCommentSchema,
-  }),
+  body: createRecipeCommentSchema,
 });
 
 const updateRecipeUpvoteValidationSchema = z.object({
   body: z.object({
-    Upvote: z.string(),
+    upvote: z.string(),
   }),
 });
 
 const updateRecipeDownvoteValidationSchema = z.object({
   body: z.object({
-    Downvote: z.string(),
+    downvote: z.string(),
   }),
 });
 

@@ -38,13 +38,13 @@ router.patch(
 
 router.patch(
   '/update-following',
-  validateRequest(userValidations.updateFollowingValidationSchema),
+  validateRequest(userValidations.updateFollowerValidationSchema),
   userControllers.updateFollowing,
 );
 
 router.patch(
   '/update-unfollowing',
-  validateRequest(userValidations.updateFollowingValidationSchema),
+  validateRequest(userValidations.updateUnFollowingValidationSchema),
   userControllers.updateUnFollowing,
 );
 
@@ -66,5 +66,6 @@ router.post(
 router.get('/all-user', userControllers.getAllUser);
 router.get('/all-admin', userControllers.getAllAdmin);
 router.get('/:email', userControllers.getUser);
+router.get('/user-by-id/:id', userControllers.getUserById);
 
 export const userRoutes = router;

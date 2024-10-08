@@ -41,6 +41,18 @@ const getAllMyRecipe = catchAsync(async (req, res) => {
   });
 });
 
+const getMyRecipeTags = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await recipeServices.getMyRecipeTags(id as string);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Recipe tags retrieved successfully',
+    data: result,
+  });
+});
+
 const getSingleRecipe = catchAsync(async (req, res) => {
   const { email } = req.params;
   const result = await recipeServices.getSingleRecipe(email);
@@ -114,25 +126,25 @@ const deleteComment = catchAsync(async (req, res) => {
 });
 
 const updateUpvote = catchAsync(async (req, res) => {
-  const { id } = req.query;
+  const { id } = req.params;
   const result = await recipeServices.updateUpvote(id as string, req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Recipe comment deleted successfully',
+    message: 'Recipe upvoted successfully',
     data: result,
   });
 });
 
 const updateDownvote = catchAsync(async (req, res) => {
-  const { id } = req.query;
+  const { id } = req.params;
   const result = await recipeServices.updateDownvote(id as string, req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Recipe updated successfully',
+    message: 'Recipe downvoted successfully',
     data: result,
   });
 });
@@ -165,4 +177,5 @@ export const recipeControllers = {
   updateDownvote,
   updateRecipeStatus,
   getAllMyRecipe,
+  getMyRecipeTags,
 };

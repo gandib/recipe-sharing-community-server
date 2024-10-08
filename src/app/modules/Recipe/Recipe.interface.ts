@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Types } from 'mongoose';
 
 export type TRating = {
@@ -19,10 +20,10 @@ export interface TRecipe {
   title: string;
   instructions: string;
   image: string[];
-  rating: TRating;
+  rating: TRating[];
   comment: TComment;
-  upvote: Types.ObjectId;
-  downvote: Types.ObjectId;
+  upvote: Types.ObjectId[];
+  downvote: Types.ObjectId[];
   tags: string;
   contentType: TContentType;
   status: TRecipeStatus;

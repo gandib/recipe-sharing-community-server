@@ -37,7 +37,7 @@ const updateFollowerValidationSchema = z.object({
   }),
 });
 
-const updateFollowingValidationSchema = z.object({
+const updateUnFollowingValidationSchema = z.object({
   body: z.object({
     following: z.string(),
   }),
@@ -77,5 +77,5 @@ export const userValidations = {
   resetPasswordValidationSchema,
   updateUserStatusValidationSchema,
   updateFollowerValidationSchema,
-  updateFollowingValidationSchema,
+  updateUnFollowingValidationSchema,
 };

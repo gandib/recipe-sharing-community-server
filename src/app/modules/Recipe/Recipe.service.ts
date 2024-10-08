@@ -2,7 +2,7 @@
 import httpStatus from 'http-status';
 import AppError from '../../errors/appError';
 import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { Recipe } from './Recipe.model';
 import { TImageFiles, TRecipe } from './Recipe.interface';
 import { User } from '../User/user.model';
@@ -43,7 +43,7 @@ const createRecipe = async (files: TImageFiles, payload: TRecipe) => {
 
 const getAllRecipe = async (query: Record<string, unknown>) => {
   const recipeQuery = new QueryBuilder(
-    Recipe.find({ status: { $ne: 'unpublished' } }),
+    Recipe.find({ status: { $ne: 'unpublished' } }).populate('user'),
     query,
   )
     .search(recipeSearchableFields)
@@ -63,7 +63,7 @@ const getAllRecipe = async (query: Record<string, unknown>) => {
 
 const getAllMyRecipe = async (id: string, query: Record<string, unknown>) => {
   const recipeQuery = new QueryBuilder(
-    Recipe.find({ status: { $ne: 'unpublished' }, user: id }),
+    Recipe.find({ status: { $ne: 'unpublished' }, user: id }).populate('user'),
     query,
   )
     .search(recipeSearchableFields)
@@ -81,8 +81,17 @@ const getAllMyRecipe = async (id: string, query: Record<string, unknown>) => {
   };
 };
 
+const getMyRecipeTags = async (id: string) => {
+  const result = await Recipe.find({
+    status: { $ne: 'unpublished' },
+    user: id,
+  }).select('tags');
+
+  return result;
+};
+
 const getSingleRecipe = async (id: string) => {
-  const result = await Recipe.findById(id);
+  const result = await Recipe.findById(id).populate('user');
 
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, 'Recipe Not found!');
@@ -127,9 +136,28 @@ const deleteRecipe = async (id: string) => {
 
 const postRating = async (
   id: string,
-  payload: { user: string; rating: number },
+  payload: { user: Types.ObjectId; rating: number },
 ) => {
-  const result = await Recipe.findByIdAndUpdate(id, { rating: payload });
+  const recipe = (await Recipe.findById(id)) as TRecipe;
+
+  let result;
+
+  const userRating = recipe.rating.find((r) => r.user.equals(payload.user));
+
+  if (userRating) {
+    result = await Recipe.findOneAndUpdate(
+      { _id: id, 'rating.user': payload.user },
+      { $set: { 'rating.$.rating': payload.rating } },
+      { new: true },
+    );
+  } else {
+    result = await Recipe.findByIdAndUpdate(
+      id,
+      { $addToSet: { rating: payload } },
+      { new: true },
+    );
+  }
+
   return result;
 };
 
@@ -146,9 +174,9 @@ const deleteComment = async (id: string) => {
   return result;
 };
 
-const updateUpvote = async (id: string, payload: string) => {
+const updateUpvote = async (id: string, payload: { upvote: string }) => {
   const recipe = await Recipe.findById(id);
-  const user = await User.findById(payload);
+  const user = await User.findById(payload.upvote);
 
   if (!recipe) {
     throw new AppError(httpStatus.NOT_FOUND, 'Recipe Not found!');
@@ -158,25 +186,13 @@ const updateUpvote = async (id: string, payload: string) => {
     throw new AppError(httpStatus.NOT_FOUND, 'User Not found!');
   }
 
-  const result = await Recipe.findByIdAndUpdate(
-    id,
-    { $addToSet: { upvote: { $each: [payload] } } },
-    { new: true },
+  const userUpvote = recipe.upvote.find(
+    (upvote: { equals: (arg0: string) => any }) =>
+      upvote.equals(payload.upvote),
   );
 
-  return result;
-};
-
-const updateDownvote = async (id: string, payload: string) => {
-  const recipe = await Recipe.findById(id);
-  const user = await User.findById(payload);
-
-  if (!recipe) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Recipe Not found!');
-  }
-
-  if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, 'User Not found!');
+  if (userUpvote) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Already upvoted!');
   }
 
   const session = await mongoose.startSession();
@@ -185,13 +201,61 @@ const updateDownvote = async (id: string, payload: string) => {
 
     await Recipe.findByIdAndUpdate(
       id,
-      { $pull: { upvote: payload } },
+      { $pull: { downvote: payload.upvote } },
       { new: true, session },
     );
 
     const result = await Recipe.findByIdAndUpdate(
       id,
-      { $addToSet: { downvote: { $each: [payload] } } },
+      { $addToSet: { upvote: { $each: [payload.upvote] } } },
+      { new: true, session },
+    );
+
+    await session.commitTransaction();
+    await session.endSession();
+
+    return result;
+  } catch (error: any) {
+    session.abortTransaction();
+    session.endSession();
+    throw new Error(error);
+  }
+};
+
+const updateDownvote = async (id: string, payload: { downvote: string }) => {
+  const recipe = await Recipe.findById(id);
+  const user = await User.findById(payload.downvote);
+
+  if (!recipe) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Recipe Not found!');
+  }
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User Not found!');
+  }
+
+  const userDownvote = recipe.downvote.find(
+    (downvote: { equals: (arg0: string) => any }) =>
+      downvote.equals(payload.downvote),
+  );
+
+  if (userDownvote) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Already downvoted!');
+  }
+
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+
+    await Recipe.findByIdAndUpdate(
+      id,
+      { $pull: { upvote: payload.downvote } },
+      { new: true, session },
+    );
+
+    const result = await Recipe.findByIdAndUpdate(
+      id,
+      { $addToSet: { downvote: { $each: [payload.downvote] } } },
       { new: true, session },
     );
 
@@ -235,4 +299,5 @@ export const recipeServices = {
   updateDownvote,
   updateRecipeStatus,
   getAllMyRecipe,
+  getMyRecipeTags,
 };

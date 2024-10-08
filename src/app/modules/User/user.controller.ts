@@ -60,6 +60,18 @@ const getUser = catchAsync(async (req, res) => {
   });
 });
 
+const getUserById = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await userServices.getUserById(id as string);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User retrieved successfully',
+    data: result,
+  });
+});
+
 const updateUser = catchAsync(async (req, res) => {
   const { id } = req.query;
   const result = await userServices.updateUser(id as string, req.body);
@@ -158,4 +170,5 @@ export const userControllers = {
   updateUnFollowing,
   getAllUser,
   getAllAdmin,
+  getUserById,
 };
