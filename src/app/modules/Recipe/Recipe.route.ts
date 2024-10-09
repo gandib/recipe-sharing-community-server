@@ -20,9 +20,21 @@ router.post(
 
 router.get('/', recipeControllers.getAllRecipe);
 
-router.get('/my-recipe/:id', recipeControllers.getAllMyRecipe);
+router.get('/all-recipe', recipeControllers.getAllRecipeForStatusChange);
 
-router.get('/my-tags/:id', recipeControllers.getMyRecipeTags);
+router.get(
+  '/my-recipe',
+  auth('user', 'admin'),
+  recipeControllers.getAllMyRecipe,
+);
+
+router.get(
+  '/my-tags',
+  auth('user', 'admin'),
+  recipeControllers.getMyRecipeTags,
+);
+
+router.get('/all-tags', recipeControllers.getAllRecipeTags);
 
 router.get('/:email', recipeControllers.getSingleRecipe);
 
@@ -61,8 +73,8 @@ router.patch(
 );
 
 router.patch(
-  '/status',
-  auth('admin'),
+  '/status/:id',
+  // auth('admin'),
   validateRequest(recipeValidations.updateRecipeStatusValidationSchema),
   recipeControllers.updateRecipeStatus,
 );

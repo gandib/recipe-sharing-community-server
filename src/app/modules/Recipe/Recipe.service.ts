@@ -61,6 +61,12 @@ const getAllRecipe = async (query: Record<string, unknown>) => {
   };
 };
 
+const getAllRecipeForStatusChange = async () => {
+  const result = await Recipe.find();
+
+  return result;
+};
+
 const getAllMyRecipe = async (id: string, query: Record<string, unknown>) => {
   const recipeQuery = new QueryBuilder(
     Recipe.find({ status: { $ne: 'unpublished' }, user: id }).populate('user'),
@@ -87,11 +93,36 @@ const getMyRecipeTags = async (id: string) => {
     user: id,
   }).select('tags');
 
+  const allTags = result.map((recipe) => recipe.tags).flat();
+  const uniqueTags = [...new Set(allTags)];
+
+  return uniqueTags;
+};
+
+const getAllRecipeTags = async () => {
+  const result = await Recipe.aggregate([
+    {
+      $match: { status: { $ne: 'unpublished' } },
+    },
+    {
+      $group: {
+        _id: '$tags',
+        tags: { $first: '$tags' },
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        tags: 1,
+      },
+    },
+  ]);
+
   return result;
 };
 
 const getSingleRecipe = async (id: string) => {
-  const result = await Recipe.findById(id).populate('user');
+  const result = await Recipe.findById(id).populate('user comment.user');
 
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, 'Recipe Not found!');
@@ -165,12 +196,19 @@ const updateComment = async (
   id: string,
   payload: { user: string; comment: string },
 ) => {
-  const result = await Recipe.findByIdAndUpdate(id, { comment: payload });
+  const result = await Recipe.findByIdAndUpdate(id, {
+    comment: payload,
+  });
   return result;
 };
 
-const deleteComment = async (id: string) => {
-  const result = await Recipe.findByIdAndDelete(id);
+const deleteComment = async (id: string, commentId: string) => {
+  const result = await Recipe.findByIdAndUpdate(
+    id,
+    { $pull: { comment: { _id: commentId } } },
+    { new: true },
+  );
+
   return result;
 };
 
@@ -300,4 +338,6 @@ export const recipeServices = {
   updateRecipeStatus,
   getAllMyRecipe,
   getMyRecipeTags,
+  getAllRecipeTags,
+  getAllRecipeForStatusChange,
 };

@@ -29,9 +29,20 @@ const getAllRecipe = catchAsync(async (req, res) => {
   });
 });
 
+const getAllRecipeForStatusChange = catchAsync(async (req, res) => {
+  const result = await recipeServices.getAllRecipeForStatusChange();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Recipe retrieved successfully',
+    data: result,
+  });
+});
+
 const getAllMyRecipe = catchAsync(async (req, res) => {
-  const { id } = req.params;
-  const result = await recipeServices.getAllMyRecipe(id as string, req.query);
+  const { _id } = req.user;
+  const result = await recipeServices.getAllMyRecipe(_id as string, req.query);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -42,8 +53,19 @@ const getAllMyRecipe = catchAsync(async (req, res) => {
 });
 
 const getMyRecipeTags = catchAsync(async (req, res) => {
-  const { id } = req.params;
-  const result = await recipeServices.getMyRecipeTags(id as string);
+  const { _id } = req.user;
+  const result = await recipeServices.getMyRecipeTags(_id as string);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Recipe tags retrieved successfully',
+    data: result,
+  });
+});
+
+const getAllRecipeTags = catchAsync(async (req, res) => {
+  const result = await recipeServices.getAllRecipeTags();
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -114,8 +136,12 @@ const updateComment = catchAsync(async (req, res) => {
 });
 
 const deleteComment = catchAsync(async (req, res) => {
-  const { id } = req.query;
-  const result = await recipeServices.deleteComment(id as string);
+  const { id } = req.params;
+  const { commentId } = req.query;
+  const result = await recipeServices.deleteComment(
+    id as string,
+    commentId as string,
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -150,7 +176,7 @@ const updateDownvote = catchAsync(async (req, res) => {
 });
 
 const updateRecipeStatus = catchAsync(async (req, res) => {
-  const { id } = req.query;
+  const { id } = req.params;
   const result = await recipeServices.updateRecipeStatus(
     id as string,
     req.body,
@@ -178,4 +204,6 @@ export const recipeControllers = {
   updateRecipeStatus,
   getAllMyRecipe,
   getMyRecipeTags,
+  getAllRecipeTags,
+  getAllRecipeForStatusChange,
 };
