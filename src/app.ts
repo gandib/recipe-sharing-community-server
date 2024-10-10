@@ -14,7 +14,7 @@ app.use(
   cors({
     credentials: true,
     origin: [
-      'https://recipe-sharing-community-client.vercel.app',
+      'https://recipe-sharing-community-client-silk.vercel.app/',
       'http://localhost:3000',
     ],
   }),
