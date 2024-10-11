@@ -1,3 +1,4 @@
+import jwt, { JwtPayload } from 'jsonwebtoken';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from 'http-status';
 import AppError from '../../errors/appError';
@@ -99,24 +100,57 @@ const getMyRecipeTags = async (id: string) => {
   return uniqueTags;
 };
 
-const getAllRecipeTags = async () => {
-  const result = await Recipe.aggregate([
-    {
-      $match: { status: { $ne: 'unpublished' } },
-    },
-    {
-      $group: {
-        _id: '$tags',
-        tags: { $first: '$tags' },
+const getAllRecipeTags = async (token: string) => {
+  const accessToken = token.split(' ')[1];
+
+  let result;
+  if (accessToken === 'undefined') {
+    return (result = await Recipe.aggregate([
+      {
+        $match: {
+          status: { $ne: 'unpublished' },
+          contentType: { $ne: 'premium' },
+        },
       },
-    },
-    {
-      $project: {
-        _id: 1,
-        tags: 1,
+      {
+        $group: {
+          _id: '$tags',
+          tags: { $first: '$tags' },
+        },
       },
-    },
-  ]);
+      {
+        $project: {
+          _id: 1,
+          tags: 1,
+        },
+      },
+    ]));
+  }
+
+  const decoded = jwt.verify(
+    accessToken,
+    config.jwt_access_secret as string,
+  ) as JwtPayload;
+
+  if (decoded && decoded?.membership === 'premium') {
+    return (result = await Recipe.aggregate([
+      {
+        $match: { status: { $ne: 'unpublished' } },
+      },
+      {
+        $group: {
+          _id: '$tags',
+          tags: { $first: '$tags' },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          tags: 1,
+        },
+      },
+    ]));
+  }
 
   return result;
 };

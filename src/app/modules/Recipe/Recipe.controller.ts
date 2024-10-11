@@ -65,7 +65,9 @@ const getMyRecipeTags = catchAsync(async (req, res) => {
 });
 
 const getAllRecipeTags = catchAsync(async (req, res) => {
-  const result = await recipeServices.getAllRecipeTags();
+  const token = req.headers.authorization;
+  // console.log(token);
+  const result = await recipeServices.getAllRecipeTags(token as string);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
