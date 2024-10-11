@@ -1,12 +1,12 @@
 import multer from 'multer';
-import config from '../config';
 import nodemailer from 'nodemailer';
 
 export const sendEmail = async (to: string, html: string) => {
   const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
-    secure: config.NODE_ENV === 'production', // Use `true` for port 465, `false` for all other ports
+    // secure: config.NODE_ENV === 'production', // Use `true` for port 465, `false` for all other ports
+    secure: false, // Use `true` for port 465, `false` for all other ports
     auth: {
       user: 'anamikaroyproma@gmail.com',
       pass: 'joej cypt ljwh espl',
