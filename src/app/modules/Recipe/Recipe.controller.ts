@@ -78,8 +78,8 @@ const getAllRecipeTags = catchAsync(async (req, res) => {
 });
 
 const getSingleRecipe = catchAsync(async (req, res) => {
-  const { email } = req.params;
-  const result = await recipeServices.getSingleRecipe(email);
+  const { id } = req.params;
+  const result = await recipeServices.getSingleRecipe(id);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

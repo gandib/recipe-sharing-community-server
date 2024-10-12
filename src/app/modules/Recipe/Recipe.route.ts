@@ -14,6 +14,7 @@ router.post(
     req.body = JSON.parse(req.body.data);
     next();
   },
+  auth('user', 'admin'),
   validateRequest(recipeValidations.createRecipeValidationSchema),
   recipeControllers.createRecipe,
 );
@@ -36,45 +37,54 @@ router.get(
 
 router.get('/all-tags', recipeControllers.getAllRecipeTags);
 
-router.get('/:email', recipeControllers.getSingleRecipe);
+router.get('/:id', auth('user', 'admin'), recipeControllers.getSingleRecipe);
 
 router.patch(
   '/:id',
+  auth('user', 'admin'),
   validateRequest(recipeValidations.updateRecipeValidationSchema),
   recipeControllers.updateRecipe,
 );
 
-router.delete('/:id', recipeControllers.deleteRecipe);
+router.delete('/:id', auth('user', 'admin'), recipeControllers.deleteRecipe);
 
 router.patch(
   '/rating/:id',
+  auth('user', 'admin'),
   validateRequest(recipeValidations.updateRecipeRatingValidationSchema),
   recipeControllers.postRating,
 );
 
 router.patch(
   '/comment/:id',
+  auth('user', 'admin'),
   validateRequest(recipeValidations.updateRecipeCommentValidationSchema),
   recipeControllers.updateComment,
 );
 
-router.delete('/comment/:id', recipeControllers.deleteComment);
+router.delete(
+  '/comment/:id',
+  auth('user', 'admin'),
+  recipeControllers.deleteComment,
+);
 
 router.patch(
   '/upvote/:id',
+  auth('user', 'admin'),
   validateRequest(recipeValidations.updateRecipeUpvoteValidationSchema),
   recipeControllers.updateUpvote,
 );
 
 router.patch(
   '/downvote/:id',
+  auth('user', 'admin'),
   validateRequest(recipeValidations.updateRecipeDownvoteValidationSchema),
   recipeControllers.updateDownvote,
 );
 
 router.patch(
   '/status/:id',
-  // auth('admin'),
+  auth('admin'),
   validateRequest(recipeValidations.updateRecipeStatusValidationSchema),
   recipeControllers.updateRecipeStatus,
 );
