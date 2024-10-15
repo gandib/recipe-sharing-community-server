@@ -42,7 +42,28 @@ const createRecipe = async (files: TImageFiles, payload: TRecipe) => {
   return result;
 };
 
-const getAllRecipe = async (query: Record<string, unknown>) => {
+const getAllRecipe = async (
+  query: Record<string, unknown>,
+  accessToken: string,
+) => {
+  if (accessToken !== 'undefined') {
+    let decoded: JwtPayload | null = null;
+    try {
+      decoded = jwt.verify(
+        accessToken,
+        config.jwt_access_secret as string,
+      ) as JwtPayload;
+
+      if (decoded && decoded?.membership === 'premium') {
+        delete query.contentType;
+      }
+    } catch (error) {
+      throw new Error('Invalid or expired token');
+    }
+  }
+
+  // console.log(query);
+
   const recipeQuery = new QueryBuilder(
     Recipe.find({ status: { $ne: 'unpublished' } }).populate('user'),
     query,
@@ -131,6 +152,29 @@ const getAllRecipeTags = async (token: string) => {
     accessToken,
     config.jwt_access_secret as string,
   ) as JwtPayload;
+
+  if (decoded?.membership !== 'premium') {
+    return (result = await Recipe.aggregate([
+      {
+        $match: {
+          status: { $ne: 'unpublished' },
+          contentType: { $ne: 'premium' },
+        },
+      },
+      {
+        $group: {
+          _id: '$tags',
+          tags: { $first: '$tags' },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          tags: 1,
+        },
+      },
+    ]));
+  }
 
   if (decoded && decoded?.membership === 'premium') {
     return (result = await Recipe.aggregate([

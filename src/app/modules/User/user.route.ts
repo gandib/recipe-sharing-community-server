@@ -2,14 +2,14 @@ import express, { NextFunction, Request, Response } from 'express';
 import validateRequest from '../../middlewares/validateRequest';
 import { userValidations } from './user.validation';
 import { userControllers } from './user.controller';
-import { upload } from '../../utils/sendEmail';
 import auth from '../../middlewares/auth';
+import { multerUpload } from '../../config/multer.config';
 
 const router = express.Router();
 
 router.post(
   '/signup',
-  upload.single('file'),
+  multerUpload.single('file'),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = JSON.parse(req.body.data);
     next();

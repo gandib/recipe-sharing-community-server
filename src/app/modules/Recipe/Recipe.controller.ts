@@ -19,7 +19,11 @@ const createRecipe = catchAsync(async (req, res) => {
 });
 
 const getAllRecipe = catchAsync(async (req, res) => {
-  const result = await recipeServices.getAllRecipe(req.query);
+  const accessToken = req.headers.authorization?.split(' ')[1];
+  const result = await recipeServices.getAllRecipe(
+    req.query,
+    accessToken as string,
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -66,7 +70,6 @@ const getMyRecipeTags = catchAsync(async (req, res) => {
 
 const getAllRecipeTags = catchAsync(async (req, res) => {
   const token = req.headers.authorization;
-  // console.log(token);
   const result = await recipeServices.getAllRecipeTags(token as string);
 
   sendResponse(res, {

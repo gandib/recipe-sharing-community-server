@@ -1,15 +1,15 @@
 import express, { NextFunction, Request, Response } from 'express';
 import validateRequest from '../../middlewares/validateRequest';
-import { upload } from '../../utils/sendEmail';
 import auth from '../../middlewares/auth';
 import { recipeValidations } from './Recipe.validation';
 import { recipeControllers } from './Recipe.controller';
+import { multerUpload } from '../../config/multer.config';
 
 const router = express.Router();
 
 router.post(
   '/create-recipe',
-  upload.fields([{ name: 'file' }]),
+  multerUpload.fields([{ name: 'file' }]),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = JSON.parse(req.body.data);
     next();
