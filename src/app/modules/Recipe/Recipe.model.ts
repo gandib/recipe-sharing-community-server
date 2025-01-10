@@ -11,7 +11,7 @@ const ratingSchema = new Schema<TRating>({
   rating: { type: Number, required: [true, 'Rating is required'] },
 });
 
-const copmmentSchema = new Schema<TComment>({
+const commentSchema = new Schema<TComment>({
   user: {
     type: Schema.Types.ObjectId,
     required: [true, 'User Id is required'],
@@ -34,7 +34,7 @@ const recipeSchema = new Schema<TRecipe>(
     },
     image: { type: [String], required: [true, 'Image is required!'] },
     rating: [ratingSchema],
-    comment: [copmmentSchema],
+    comment: [commentSchema],
     upvote: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     downvote: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     tags: { type: String, required: [true, 'Tag is required!'] },

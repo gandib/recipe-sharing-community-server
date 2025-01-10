@@ -276,9 +276,32 @@ const updateComment = async (
   id: string,
   payload: { user: string; comment: string },
 ) => {
-  const result = await Recipe.findByIdAndUpdate(id, {
-    comment: payload,
-  });
+  const recipe = await Recipe.findById(id);
+
+  if (!recipe) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Recipe not found');
+  }
+
+  // Convert user to ObjectId
+  const userId = new mongoose.Types.ObjectId(payload.user);
+
+  const existComment = recipe?.comment.find(
+    (comment) => comment.user.toString() === payload.user,
+  );
+  // console.log(existComment);
+  let result;
+  if (existComment) {
+    result = await Recipe.findByIdAndUpdate(id, {
+      comment: payload,
+    });
+  } else {
+    result = await Recipe.findByIdAndUpdate(
+      id,
+      { $push: { comment: { user: userId, comment: payload.comment } } },
+      { new: true }, // Return the updated document
+    );
+  }
+
   return result;
 };
 

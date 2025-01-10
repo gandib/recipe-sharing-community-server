@@ -21,7 +21,7 @@ export interface TRecipe {
   instructions: string;
   image: string[];
   rating: TRating[];
-  comment: TComment;
+  comment: TComment[];
   upvote: Types.ObjectId[];
   downvote: Types.ObjectId[];
   tags: string;
