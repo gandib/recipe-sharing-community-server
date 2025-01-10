@@ -153,7 +153,6 @@ const updateUser = async (id: string, payload: TUser) => {
 const updateFollowing = async (id: string, payload: TUser) => {
   const user = await User.findById(id).select('-password');
   const follower = await User.findById(payload.follower).select('-password');
-
   if (!user || !follower) {
     throw new AppError(httpStatus.NOT_FOUND, 'User Not found!');
   }
