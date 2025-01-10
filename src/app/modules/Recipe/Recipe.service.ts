@@ -65,7 +65,9 @@ const getAllRecipe = async (
   // console.log(query);
 
   const recipeQuery = new QueryBuilder(
-    Recipe.find({ status: { $ne: 'unpublished' } }).populate('user'),
+    Recipe.find({ status: { $ne: 'unpublished' } }).populate(
+      'user comment.user',
+    ),
     query,
   )
     .search(recipeSearchableFields)
