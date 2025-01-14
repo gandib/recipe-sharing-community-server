@@ -23,6 +23,7 @@ export type TGroupStatus = 'published' | 'unpublished';
 export type TImageFiles = { [fieldname: string]: Express.Multer.File[] };
 
 export interface TGroup {
+  payload: Types.ObjectId[];
   user: Types.ObjectId;
   name: string;
   members: Types.ObjectId[];

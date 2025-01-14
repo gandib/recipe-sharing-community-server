@@ -68,6 +68,18 @@ const getAllMyGroup = catchAsync(async (req, res) => {
   });
 });
 
+const getAllMyGroupPost = catchAsync(async (req, res) => {
+  const { groupId } = req.params;
+  const result = await groupServices.getAllMyGroupPost(groupId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Group posts retrieved successfully',
+    data: result,
+  });
+});
+
 const getSingleGroup = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result = await groupServices.getSingleGroup(id);
@@ -184,6 +196,7 @@ export const groupControllers = {
   // updateDownvote,
   // updateRecipeStatus,
   getAllMyGroup,
+  getAllMyGroupPost,
   // getMyRecipeTags,
   // getAllRecipeTags,
   getAllGroupForStatusChange,

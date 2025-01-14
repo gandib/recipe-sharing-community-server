@@ -201,6 +201,15 @@ const deleteGroup = async (id: string) => {
   return result;
 };
 
+const getAllMyGroupPost = async (groupId: string) => {
+  const result = await Group.find({
+    status: { $ne: 'unpublished' },
+    _id: groupId,
+  }).populate('members user posts.user');
+
+  return result;
+};
+
 // const updateComment = async (
 //   id: string,
 //   payload: { postId: string; user: string; comment: string },
@@ -369,6 +378,7 @@ export const groupServices = {
   // updateDownvote,
   // updateRecipeStatus,
   getAllMyGroup,
+  getAllMyGroupPost,
   // getMyRecipeTags,
   // getAllRecipeTags,
   getAllGroupForStatusChange,

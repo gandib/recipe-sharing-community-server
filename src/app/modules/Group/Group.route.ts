@@ -39,6 +39,12 @@ router.get('/my-group', auth('user', 'admin'), groupControllers.getAllMyGroup);
 
 router.get('/:id', auth('user', 'admin'), groupControllers.getSingleGroup);
 
+router.get(
+  '/my-group-post/:groupId',
+  auth('user', 'admin'),
+  groupControllers.getAllMyGroupPost,
+);
+
 router.patch(
   '/:id',
   auth('user', 'admin'),
