@@ -93,7 +93,9 @@ const getAllRecipeForStatusChange = async () => {
 
 const getAllMyRecipe = async (id: string, query: Record<string, unknown>) => {
   const recipeQuery = new QueryBuilder(
-    Recipe.find({ status: { $ne: 'unpublished' }, user: id }).populate('user'),
+    Recipe.find({ status: { $ne: 'unpublished' }, user: id }).populate(
+      'user comment.user',
+    ),
     query,
   )
     .search(recipeSearchableFields)
